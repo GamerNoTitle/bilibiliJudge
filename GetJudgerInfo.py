@@ -7,6 +7,11 @@ def GetInfo(SESSDATA):
     test='SESSDATA={}'.format(SESSDATA)
     headers={
         'cookie': test,
+        'referer': "https://www.bilibili.com/",
+        'origin': "https://www.bilibili.com/",
+        'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36",
+        'accept-language': "zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7,zh-TW;q=0.6",
+        'content-type': "application/x-www-form-urlencoded; charset=UTF-8"
     }
     info=r.get(url,headers=headers)
     info_loads=js.loads(info.text)
