@@ -22,4 +22,4 @@ def Parse(info):
         '封禁投票': case['voteBreak'],
         '合规投票': case['voteRule']
     })
-    return result
+    return result,int(case['status'])

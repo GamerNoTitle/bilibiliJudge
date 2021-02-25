@@ -9,15 +9,16 @@ import sys
 import json as js
 import requests as r
 import time
+import random
 
-try:
-    csrf=sys.argv[1]
-    sessdata=sys.argv[2]
-    if(csrf=='' or sessdata==''):
-        print('必要变量未设置！程序即将退出！')
-        sys.exit()
-except:
-    print('缺少必要变量！程序即将推出！')
+class VariableError(Exception):
+    pass
+
+csrf=sys.argv[1]
+sessdata=sys.argv[2]
+if(csrf=='' or sessdata==''):
+    print('必要变量未设置！程序即将退出！')
+    raise(VariableError('Essential variable(s) not available!'))
     sys.exit()
 
 try:
@@ -47,11 +48,10 @@ print(GiveupConfig)
 ApplyResult=None
 cannotJudge=False
 
-
 def GetAndCal(cid):
     case=GetCase(cid).text
     caseinfo=js.loads(case)
-    printinfo=Parse(case)
+    printinfo,casestatus=Parse(case)
     toprint='''
 获取到风纪委员案件（ID：{}），具体信息如下：
 {}
@@ -60,7 +60,7 @@ def GetAndCal(cid):
     voteBreak=caseinfo['data']['voteBreak']
     voteDelete=caseinfo['data']['voteDelete']
     voteRule=caseinfo['data']['voteRule']
-    return voteBreak,voteDelete,voteRule,caseinfo
+    return voteBreak,voteDelete,voteRule,caseinfo,casestatus
 
 
 def Main():
@@ -82,23 +82,30 @@ def Main():
         if(cid==True):
             print('今天案件已经审核满或没有需要仲裁的案件了，明天我们再继续吧~')
             sys.exit()
-        voteBreak,voteDelete,voteRule,caseinfo=GetAndCal(cid)
+        voteBreak,voteDelete,voteRule,caseinfo,casestatus=GetAndCal(cid)
         operation,operation_print=VoteCalculate(voteBreak,voteDelete,voteRule,GiveUpEnable,JudgeProportion)
+        if casestatus==4:
+            print('当前案件已裁决完毕，即将进行下一案件的审理……')
+            continue
         while True:
             if(operation=='CannotJudge'):
                 print('目前案件{}的投票数量不足以判定操作，将在{}秒钟后重试！'.format(caseinfo['data']['id'],delay))
                 global cannotJudge
                 cannotJudge=True
                 time.sleep(delay)
-                voteBreak,voteDelete,voteRule,caseinfo=GetAndCal(cid)
+                voteBreak,voteDelete,voteRule,caseinfo,caseStatus=GetAndCal(cid)
                 operation,operation_print=VoteCalculate(voteBreak,voteDelete,voteRule,GiveUpEnable,JudgeProportion)
             else:
                 cannotJudge=False
                 break
+        randomtime=random.randint(10,600)
+        print('将等待{}秒后进行判定'.format(randomtime))
+        time.sleep(randomtime)
         operation_output='案件{}的投票结果计算为{}，正在进行投票操作……'.format(caseinfo['data']['id'],operation_print)
         print(operation_output)
         Vote(operation,cid,csrf,sessdata)
         print('已完成投票操作！')
+        
     
 
 if __name__ == "__main__":

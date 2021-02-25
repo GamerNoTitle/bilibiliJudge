@@ -26,6 +26,8 @@
     - [JudgeProportion](#JudgeProportion)
 - [脚本测试](#脚本测试)
 - [脚本更新](#脚本更新)
+- [Q&A](#QA)
+- [免责声明](#免责声明)
 
 ## 从零开始的使用指北☞
 
@@ -129,8 +131,42 @@
 
 这样你就完成了手动更新操作！
 
-## 历史STAR
+#### Q&A
 
-![](http://starchart.cc/GamerNoTitle/bilibiliJudge.svg)
+##### __main__.VariableError: Essential variable(s) not available!
+
+这种情况下请检查你的变量是否填好，如果`csrf`和`sessdata`不填好就会出现这个错误
+
+如何检查自己的变量是否填好？你可以点开当次Action记录中的`Run Script`这一节，然后点击`Run python3 Main.py "$csrf" "$sessdata" "$giveup" "$delay" "$JudgeProportion"`这一行把它展开，看看自己的变量是否填写完整，它不会显示你填写的变量，但是填了的变量会以`***`来显示来告诉你你填写了
+
+##### 用户名一节：KeyError
+
+```
+Traceback (most recent call last):
+  File "Main.py", line 112, in <module>
+    Main()
+  File "Main.py", line 67, in Main
+    Userinfo,UserinfoParsed=GetInfo(sessdata)
+  File "/home/runner/work/bilibiliJudge/bilibiliJudge/GetJudgerInfo.py", line 18, in GetInfo
+    '用户名': info_loads['data']['uname'][0]+ ('*' * int(len(info_loads['data']['uname'])-2)) +info_loads['data']['uname'][len(info_loads['data']['uname'])-1:],
+KeyError: 'data'
+```
+
+在`GetJudgerInfo.py`文件中，第十二行
+
+```python
+    info_loads=js.loads(info.text)
+```
+
+下面加多一行`print(info_loads)`，如下面这样
+
+```python
+    info_loads=js.loads(info.text)
+    print(info_loads)
+```
+
+并发起issue询问（当然你能自己看懂是什么情况是最好的）
+
+## 免责声明
 
 
