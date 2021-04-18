@@ -9,19 +9,20 @@ import sys
 import json as js
 import time
 import random
+import os
 
 class VariableError(Exception):
     pass
 
-csrf=sys.argv[1]
-sessdata=sys.argv[2]
+csrf=os.environ.get("csrf","")
+sessdata=os.environ.get("SESSDATA","")
 if(csrf=='' or sessdata==''):
     print('必要变量未设置！程序即将退出！')
     raise(VariableError('Essential variable(s) not available!'))
     sys.exit()
 
 try:
-    GiveUpEnable=sys.argv[3]
+    GiveUpEnable=os.environ.get("GiveUpEnable","")
     GiveUpEnableDisplay='是'
     if GiveUpEnable=='False':
         GiveUpEnable=False
@@ -31,12 +32,12 @@ except:
     GiveUpEnableDisplay='是'
 
 try:
-    delay=int(sys.argv[4])
+    delay=int(os.environ.get("delay",""))
 except:
     delay=300
 
 try:
-    JudgeProportion=float(sys.argv[5])
+    JudgeProportion=float(os.environ.get("JudgeProportion",""))
     if not(JudgeProportion<1 and JudgeProportion>0):
         JudgeProportion=0.7
 except:
